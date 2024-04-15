@@ -20,6 +20,45 @@ try {
         listHailstones.push(hailstone);
         
     });
+    /*Fixing an axis, if you have two stones x1, x2 travelling with identical speeds dx, and you hit the stones at times t1, t2, then the speed dx' of our throw have to satisfy (dx' - dx) (t1 - t2) = x1 - x2.
+    * */
+    let vxArray = [];
+    let dupeVXArray = [];
+    let dupeVXCount = {};
+    let vyArray = [];
+    let dupeVYArray = [];
+    let dupeVYCount = {};
+    let vzArray = [];
+    let dupeVZArray = [];
+    let dupeVZCount = {};
+    listHailstones.forEach(function(stone,index){
+        if (!vxArray.includes(stone.vx)){
+            vxArray.push(stone.vx);
+        } else {
+            dupeVXArray.push(stone.vx);
+            dupeVXCount[stone.vx] = dupeVXCount[stone.vx] + 1 || 1;
+        }
+        
+        if (!vyArray.includes(stone.vy)){
+            vyArray.push(stone.vy);
+        } else {
+            dupeVYArray.push(stone.vy);
+            dupeVYCount[stone.vy] = dupeVYCount[stone.vy] + 1 || 1;
+        }
+
+        if (!vzArray.includes(stone.vz)){
+            vzArray.push(stone.vz);
+        } else {
+            dupeVZArray.push(stone.vz);
+            dupeVZCount[stone.vz] = dupeVZCount[stone.vz] + 1 || 1;
+        }
+    });
+    console.log("dupeVXArray", dupeVXArray)
+    console.log("dupeVXCount", dupeVXCount)
+    console.log("dupeVYArray", dupeVYArray)
+    console.log("dupeVYCount", dupeVYCount)
+    console.log("dupeVZArray", dupeVZArray)
+    console.log("dupeVZCount", dupeVZCount)
     let crossingHailstones = Array.from(listHailstones); //clone array
     listHailstones.forEach(function(hailstone){
         crossingHailstones.forEach(function(crossingHailstone,index2){
@@ -61,3 +100,13 @@ try {
 //part 1 34468 too high
 //part 1 9112 too low,
 //part 1 27328 correct
+
+/*
+242632083944780, 325377174991042, 369509461030046 @ 5, -64, -31
+277670947497460, 176140935580014, 370791351808746 @ 5, 164, -182
+247902039565320, 286744641696110, 356448085275486 @ 5, -19, -30 
+221337267596260, 322267878439734, 349373211752250 @ 5, -46, 40
+251358345165730, 324665210972710, 392771385947283 @ 5, -71, -89
+(dx' - dx) (t1 - t2) = x1 - x2.
+(DistanceDifference % (RockVelocity-HailVelocity) = 0
+*/
