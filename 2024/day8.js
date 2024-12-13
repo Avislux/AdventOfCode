@@ -40,6 +40,7 @@ try {
                         antiNodesCoordsPerFreq[frequency].push(checkLocation)
                     } else {
                         antiNodesCoordsPerFreq[frequency] = [];
+                        antiNodesCoordsPerFreq[frequency].push(checkLocation)
                     }
                     
                     if (checkLocation[0] >= 0 && checkLocation[0] < height && checkLocation[1] >= 0 && checkLocation[1] < width) {
