@@ -29,7 +29,8 @@ try {
             continue;
         }
         let numOperatorSequences = Math.pow(2,numbers.length - 1);
-        
+        //Potential optimization: Work backwards with the value to find and dividing by the last number in sequence. 
+        //If you get a remainder , then it's immediately out.
         for (let x = 1; x <= numOperatorSequences; x++){
             let testValue = numbers[0];
             for (let j = 0; j < numbers.length - 1; j++) {
