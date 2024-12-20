@@ -190,7 +190,7 @@ try {
     }
     let loops = 0;
     for (let i = 0; i < path.length; i++) {
-        let newGrid =JSON.parse(JSON.stringify(originalGrid));
+        let newGrid =JSON.parse(JSON.stringify(originalGrid)); //clone grid
         
         let result = simulateGrid(newGrid,i);
         if (result){
