@@ -24,7 +24,7 @@ let vertInputObject = {
     '3': 'vvv',
     '0': ''
 }
-function computeDirectionalPad(inputString,v =1){
+function computeDirectionalPad(inputString,constrict =1){
     let directionalKeypadPosition = directionalKeypadObject['A'];
     let inceptionDirectionalInput = '';
 
@@ -40,9 +40,9 @@ function computeDirectionalPad(inputString,v =1){
         let directions = ''.concat(horInput,vertInput);
         if (directions === "<<v"){
             directions = "v<<" //124560
-            if (v === 2){
-                directions = "<v<" //128248
-            }
+            // if (v === 2){
+            //     directions = "<v<" //128248
+            // }
         } else if (directions === "<v" && directionalKeypadPosition[0] === 1 && directionalKeypadPosition[1] === 0 ){
             directions = "v<"
         }
@@ -80,6 +80,7 @@ try {
     
    
     let solution = 0;
+    let lastDirections = null;
     for (let i = 0; i < lines.length; i++) {
         let code = lines[i];
         let digits = code.split('');
@@ -93,34 +94,58 @@ try {
             
             let horInput =  horInputObject[changeX.toString()];
             let vertInput =  vertInputObject[changeY.toString()];
-            let directions = ''.concat(horInput,vertInput);
-             if (directions === "<<^" && numberKeypadPosition[0] === 2 && numberKeypadPosition[1] === 3 ){
+            let directions = ''
+           
+            directions = ''.concat(horInput,vertInput);
+            if (directions === "<<^" && numberKeypadPosition[0] === 2 && numberKeypadPosition[1] === 3) {
                 directions = "^<<"
-            } else  if (directions === "<^^" && numberKeypadPosition[0] === 1 && numberKeypadPosition[1] === 3 ){ 
-                 directions = "^^<"
-             }
+            } else if (directions === "<^^" && numberKeypadPosition[0] === 1 && numberKeypadPosition[1] === 3) {
+                directions = "^^<"
+            } else if (directions === "<<^^" && numberKeypadPosition[0] === 2 && numberKeypadPosition[1] === 3) {
+                directions = "^^<<"
+            } else if (directions === ">>vv" && !(numberKeypadPosition[0] === 0 && numberKeypadPosition[1] === 1)) {
+                directions = "vv>>"
+            } else if (directions === ">vv" && !(numberKeypadPosition[0] === 0 && numberKeypadPosition[1] === 1)) {
+                directions = "vv>"
+            } else if (directions === ">>v" && !(numberKeypadPosition[0] === 0 && numberKeypadPosition[1] === 2)) {
+                directions = "v>>"
+            } else if (directions === ">vvv" && !(numberKeypadPosition[0] === 0 && numberKeypadPosition[1] === 0)) {
+                directions = "vvv>"
+            }
+        
             directionalInput = directionalInput.concat(directions, 'A');
+            lastDirections = directions;
             numberKeypadPosition = newPosition;
             
         }
-        let inceptionDirectionalInput = computeDirectionalPad(directionalInput);
-        let inception2DirectionalInput = computeDirectionalPad(inceptionDirectionalInput,2); //troubleshoot 4
-       
-
+        let loopyInput = directionalInput;
+        let iterations = 2; // part 1
+        //iterations = 25 ; //part 2
+        for (let x = 1; x <= iterations; x++){
+            console.log(x);
+            let newInput = computeDirectionalPad(loopyInput);
+            loopyInput = newInput;
+        }
+        // let inceptionDirectionalInput = computeDirectionalPad(directionalInput);
+        // let inception2DirectionalInput = computeDirectionalPad(inceptionDirectionalInput,2); 
      
-        console.log(inception2DirectionalInput);
+       /* console.log(inception2DirectionalInput);
         console.log(inceptionDirectionalInput);
         console.log(directionalInput);
-        console.log(code);
+        console.log(code);*/
 
         digits.pop();
         let numericalPart = parseInt(digits.join(''))
-        console.log(inception2DirectionalInput.length ,numericalPart )
-        solution += inception2DirectionalInput.length * numericalPart;
+        console.log(loopyInput.length ,numericalPart )
+        solution += loopyInput.length * numericalPart;
     }
-    //TODO: the blank block gives me a wrong solution
     console.log(solution);
 } catch (err) {
     console.error(err);
 }
 //Part 1 233106 too high
+//       220561 too low super wrong
+//       229214 incorrect after >>vv to vv>>
+//       225354 incorrect after >vv to vv> improved 965A to 66
+//       224782 incorrect after >>v to v>> improved 143A from 76 to 72
+//       222670 CORRECT >vvv to vvv> 66/72/70/68/68
