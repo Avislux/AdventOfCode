@@ -24,7 +24,8 @@ let vertInputObject = {
     '3': 'vvv',
     '0': ''
 }
-function computeDirectionalPad(inputString,constrict =1){
+var memo = {};
+function computeDirectionalPad(inputString){
     let directionalKeypadPosition = directionalKeypadObject['A'];
     let inceptionDirectionalInput = '';
 
@@ -39,10 +40,7 @@ function computeDirectionalPad(inputString,constrict =1){
         // console.log(nextDigit, directionalKeypadPosition, newPosition, horInput,vertInput);
         let directions = ''.concat(horInput,vertInput);
         if (directions === "<<v"){
-            directions = "v<<" //124560
-            // if (v === 2){
-            //     directions = "<v<" //128248
-            // }
+            directions = "v<<" 
         } else if (directions === "<v" && directionalKeypadPosition[0] === 1 && directionalKeypadPosition[1] === 0 ){
             directions = "v<"
         }

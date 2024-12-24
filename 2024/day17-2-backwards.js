@@ -1,22 +1,11 @@
 const fs = require('node:fs');
 var Math = require('mathjs');
-const {type} = require("node:os");
 
-/*Register A: 729
-Register B: 0
-Register C: 0
 
-Program: 0,1,5,4,3,0
-*/
-/*var registerA = 729;
-var registerB = 0;
-var registerC = 0;
-var input = "0,1,5,4,3,0"*/
-// 117440
 var registerA = 1;
 var registerB = 0;
 var registerC = 0;
-var input  = fs.readFileSync('inputs/day17.txt', 'utf8')
+var input = input = fs.readFileSync('inputs/day17.txt', 'utf8')
 // input = "0,3,5,4,3,0";
 
 function getComboOperand(operand){
@@ -47,15 +36,45 @@ try {
     let program = input.split(",").map((v) =>{return parseInt(v);});
     let output = []
     let instruction = 0
-    // highest num tested   403000000  from 2^31 to 2400000000 jump 1911180991 15289600000-122335600000
-    //2215730879 * 8 * 8 gets into a ballpark of 9s
-    //tried  2215730879 * 8 * 8 to 141818000000
-    let regATest = 1134586165920;
-    //last number 1134521000000
-    //1134589000000
+   
+   
     let finalOutput = ""
     let multiply = false;
-    while (finalOutput !== input) {
+    // 103060592    611112160 to find 3,4,3,1,5,5,5,3,0,
+    // 824,484,744  6111121610
+    // 6,595,878,272 
+    //6597450816 to find 50343155530
+    // 52767026192
+    // 52779609104 to find 7503
+    //0 = 6
+    //3,0 = 49 ---mod 8 is 1
+    //530 = 393 ---mod 8 is 1              
+    //5530 = 3145 ---mod 8 is 1             6111
+    //55530 = 25161 ---mod 8 is 1           61111
+    //155530 = 201290 ---mod 8 is 2         611112
+    //3,1,5,5,5,3,0         1610321         6111121
+    // starting from 12,882,568            
+    //4,3,1,5,5,5,3,0 12882574              61111216
+    //3,4,3,1,5,5,5,3,0,  .103060593          611112161
+    //3,4,3,1,5,5,5,3,0,  .103060598          611112166
+    //3,4,3,1,5,5,5,3,0,  .103085169          611172161
+    //0,3,4,3,1,5,5,5,3,0   824484784         6111121660
+    //0,3,4,3,1,5,5,5,3,0   824681392         6111721610
+    
+    //5,0,3,4,3,1,5,5,5,3,0     6595878274      61111216602     6595878277
+    //5,0,3,4,3,1,5,5,5,3,0     6595878277      61111216605
+    //5,0,3,4,3,1,5,5,5,3,0     6597451138      61117216602
+    //7,5,0,3,4,3,1,5,5,5,3,0  starting from 52767026192....seems to break down
+    //3,7,5,0,3,4,3,1,5,5,5,3,0 
+    
+    
+    //2,4,1,3,7,5,0,3,4,3,1,5,5,5,3,0 
+    //we are at 9 digits confirmed
+    let regATest = 52779609104;
+    
+    while (finalOutput !== "7,5,0,3,4,3,1,5,5,5,3,0") {
+    // while (finalOutput !== input) {
+        
         output = [];
         instruction = 0;
         if (multiply){
@@ -111,24 +130,53 @@ try {
                         comboOperand = parseInt(comboOperand);
                     }
                     result = comboOperand % 8;
-                    if (result !== program[output.length]){
-                        if (output.length >= 9){
-                            console.log("combo",comboOperand, "registerB", registerB)
-                            
-                            console.log(regATest,registerA,output.join(''),result)
-                        }
+                  
+                    output.push(result);
+                    /*if (output.length >= 1 && output[0] !== 7){
                         continue;
                     }
-                    output.push(result)
-                    if (output.length > 8){
-                        console.log(regATest,output.length);
+                    if (output.length >= 2 && output[1] !== 5){
+                        continue;
+                    }
+                    if (output.length >= 3 && output[2] !== 0){
+                        continue;
+                    }
+                    if (output.length >= 4 && output[3] !== 3){
+                        continue;
+                    }
+                    if (output.length >= 5 && output[4] !== 4){
+                        continue;
+                    }
+                    if (output.length >= 6 && output[5] !== 3){
+                        continue;
+                    }
+                    if (output.length >= 7 && output[5] !== 1){
+                        continue;
+                    }
+                    if (output.length >= 8 && output[5] !== 5){
+                        continue;
+                    }
+                    if (output.length >= 9 && output[5] !== 5){
+                        continue;
+                    }
+                    if (output.length >= 10 && output[5] !== 5){
+                        continue;
+                    }
+                    if (output.length > 10){
+                        console.log(regATest,output.length, output);
                         // multiply = true;
                     }
-                    if (output.length > lengthToFind){
-                        console.log(regATest,output);
-                        multiply = true;
-                        lengthToFind++;
+                    if (output.length >= 11 && output[5] !== 3){
+                        continue;
                     }
+                    if (output.length >= 12 && output[5] !== 0){
+                        continue;
+                    }*/
+                    // if (output.length > 11){
+                    //     console.log(regATest,output.length, output);
+                    //     // multiply = true;
+                    // }
+                   
                     break;
                 case(6):
                     //Same as 1 but store to B
@@ -148,6 +196,8 @@ try {
             }
         }
         finalOutput = output.join(",");
+        //the checker
+       
         if (regATest % 1000000 === 0){
             // console.log(finalOutput, "is still not", input)
         }//            501010433232896

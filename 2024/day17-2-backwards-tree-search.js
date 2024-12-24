@@ -1,23 +1,15 @@
 const fs = require('node:fs');
 var Math = require('mathjs');
-const {type} = require("node:os");
 
-/*Register A: 729
-Register B: 0
-Register C: 0
-
-Program: 0,1,5,4,3,0
-*/
-/*var registerA = 729;
-var registerB = 0;
-var registerC = 0;
-var input = "0,1,5,4,3,0"*/
-// 117440
+/*The number to find is too large to brute force.
+* Printing the first numbers that print the end of the substring creates a pattern
+* it gradually reveals a number in base 8. 
+* Basically once we find a number that prints the end, multiply the number by 8 and increase the search
+* if that chain doesn't reach the next number, go back a node */
 var registerA = 1;
 var registerB = 0;
 var registerC = 0;
-var input  = fs.readFileSync('inputs/day17.txt', 'utf8')
-// input = "0,3,5,4,3,0";
+var input = fs.readFileSync('inputs/day17.txt', 'utf8')
 
 function getComboOperand(operand){
     switch(operand){
@@ -42,35 +34,60 @@ function getComboOperand(operand){
     }
     return null;
 }
+function arraysEqual(arr1, arr2) {
+    // Check if the lengths are different
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    // Check each element for equality
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+let numbersToSkip = [];
 try {
     let lengthToFind = 9;
     let program = input.split(",").map((v) =>{return parseInt(v);});
     let output = []
     let instruction = 0
-    // highest num tested   403000000  from 2^31 to 2400000000 jump 1911180991 15289600000-122335600000
-    //2215730879 * 8 * 8 gets into a ballpark of 9s
-    //tried  2215730879 * 8 * 8 to 141818000000
-    let regATest = 1134586165920;
-    //last number 1134521000000
-    //1134589000000
+   
+   
     let finalOutput = ""
     let multiply = false;
+    
+    let regATest = 0;
+    
+    let depth = 1;
+    let nodes = [];
+    let arrayToMatch = [];
+    let unshiftIndex = -1;
+    arrayToMatch.unshift(program.at(unshiftIndex));
+    let timeAtNode = 0;
     while (finalOutput !== input) {
         output = [];
         instruction = 0;
         if (multiply){
-            regATest *= Math.pow(2, lengthToFind);
+            regATest *= 8;
             multiply = false;
+            timeAtNode = 0;
         } else {
             regATest += 1;
+            timeAtNode++;
         }
-        
         registerA = regATest;
+        registerB = 0;
+        registerC = 0;
+        if (numbersToSkip.includes(regATest)){
+            continue;
+        }
         if (regATest % 1000000 === 0){
             console.log(regATest)
         }
         while (program.length > instruction) {
-           
             finalOutput = ""
             let opcode = program[instruction];
             instruction++;
@@ -111,24 +128,9 @@ try {
                         comboOperand = parseInt(comboOperand);
                     }
                     result = comboOperand % 8;
-                    if (result !== program[output.length]){
-                        if (output.length >= 9){
-                            console.log("combo",comboOperand, "registerB", registerB)
-                            
-                            console.log(regATest,registerA,output.join(''),result)
-                        }
-                        continue;
-                    }
-                    output.push(result)
-                    if (output.length > 8){
-                        console.log(regATest,output.length);
-                        // multiply = true;
-                    }
-                    if (output.length > lengthToFind){
-                        console.log(regATest,output);
-                        multiply = true;
-                        lengthToFind++;
-                    }
+                  
+                    output.push(result);
+                    
                     break;
                 case(6):
                     //Same as 1 but store to B
@@ -146,8 +148,28 @@ try {
                     registerC = parseInt(result);
                     break;
             }
+            if (opcode === 5) {
+                if (arraysEqual(output, arrayToMatch)){
+                    unshiftIndex--;
+                    arrayToMatch.unshift(program.at(unshiftIndex));
+                    multiply = true;
+                    nodes.push(regATest);
+                    console.log(regATest,output.length, JSON.stringify(output));
+                }
+            }
+        }
+        if (timeAtNode > 100000) {
+            let skip = nodes.pop();
+            numbersToSkip.push(skip);
+            regATest = nodes.at(-1);
+            arrayToMatch.shift();
+            timeAtNode = 0;
+            unshiftIndex++;
+            console.log("back to", regATest, JSON.stringify(nodes) );
+            
         }
         finalOutput = output.join(",");
+       
         if (regATest % 1000000 === 0){
             // console.log(finalOutput, "is still not", input)
         }//            501010433232896
@@ -163,3 +185,5 @@ try {
     console.error(err);
 }
 //Part 1:  2,0,1,3,4,0,2,1,7
+//Part 2 236580836040301
+//in base 8 : 6 562 550 454 257 155

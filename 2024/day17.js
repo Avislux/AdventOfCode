@@ -13,10 +13,11 @@ var registerC = 0;
 var input = "0,1,5,4,3,0"*/
 
 var registerA = 22571680;
-registerA = 2215730797;
+registerA = 52767706901 ;
+// registerA = 17_725_846_373;
 var registerB = 0;
 var registerC = 0;
-var input = "2,4,1,3,7,5,0,3,4,3,1,5,5,5,3,0"
+var input = fs.readFileSync('inputs/day17.txt', 'utf8')
 // input = "0,3,5,4,3,0";
 function getComboOperand(operand){
     switch(operand){
@@ -60,22 +61,23 @@ try {
                 //division
                 //The numerator is the value in the A register. The denominator is found by raising 2 to the power of the instruction's combo operand.
                 // The result of the division operation is truncated to an integer and then written to the A register.
+                let regAOriginal = registerA
                 result = registerA / Math.pow(2, comboOperand)
                 registerA = parseInt(result);
-                console.log("RegA", registerA,"divide 2 to the", comboOperand, result, parseInt(result)  )
+                console.log("RegA", regAOriginal,"divide 2 to the", comboOperand, result, parseInt(result)  )
                 break;
             case(1):
                 //bitwise XOR of register B and the instruction's literal operand, then stores the result in register B.
                 regBOriginal = registerB;
                 registerB = BigInt(registerB) ^ BigInt(operand);
                 // console.log(regBOriginal, "XOR", operand, "to reg B", registerB)
-                console.log("RegB",BigInt(regBOriginal), "XOR", BigInt(operand), "to reg B ", registerB)
+                console.log("RegB",BigInt(regBOriginal), "XOR", BigInt(operand), "to reg B", registerB)
                 
                 break;
             case(2):
                 //calculates the value of its combo operand modulo 8 (thereby keeping only its lowest 3 bits), then writes that value to the B register.
                 registerB = comboOperand % 8;
-                console.log(comboOperand,"mod 8", registerB);
+                console.log("Combo", comboOperand,"mod 8 to B", registerB);
                 break;
             case(3):
                 //jmp
@@ -101,9 +103,9 @@ try {
                     comboOperand = parseInt(comboOperand);
                 }
                 result = comboOperand % 8;
-                if (result !== program[output.length]){
+               /* if (result !== program[output.length]){
                     continue;
-                }
+                }*/
                 output.push(result)
                 console.log("output", output.join(','))
                 
@@ -118,7 +120,7 @@ try {
                 }
                 result = registerA / Math.pow(2, comboOperand)
                 registerB = parseInt(result);
-                console.log(registerA,"divide 2 to the", comboOperand, result, parseInt(result), "in B"  )
+                console.log("RegA",registerA,"divide 2 to the", comboOperand, result, parseInt(result), "in B"  )
 
                 break;
             case(7):
@@ -127,12 +129,12 @@ try {
                 }
                 result = registerA / Math.pow(2, comboOperand)
                 registerC = parseInt(result);
-                console.log(registerA,"divide 2 to the", comboOperand, result, parseInt(result), "in C"  )
+                console.log("RegA",registerA,"divide 2 to the", comboOperand, result, parseInt(result), "in C"  )
                 break;
         }
     }
     let finalOutput = output.join(",");
-    console.log(finalOutput)
+    console.log(finalOutput, "is the output")
 } catch (err) {
     console.error(err);
 }
