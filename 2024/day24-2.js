@@ -28,7 +28,6 @@ try {
         {a:1, b:1, carryIn:1, out:1, carryOut:1},
         
     ]
-    
     for (let i = 0; i < connectionsInput.length; i++) {
         let line = connectionsInput[i].split(" ")
         let connection = {
@@ -40,102 +39,97 @@ try {
         connections.push(connection);
     }
     connections.sort((a, b) => b.a.localeCompare(a.a));
-    console.log(connections);
-    
+    // console.log(connections);
+    let maxBits = 45
+    let adders = [];
+    let carry = '';
+    for (let i = 0; i < maxBits; i++) {
+        let wireName = '';
+        let stringNumber = i.toString();;
+        if (i.toString().length === 1){
+            stringNumber = "0" + i.toString();
+        } 
+        wireName = "x" + stringNumber;
+        let filteredConnections = connections.filter((c) => { return c.a === wireName || c.b === wireName});
+        let xor1 = filteredConnections.filter((c) => { return c.op === 'XOR'})[0];
+        let and1 = filteredConnections.filter((c) => { return c.op === 'AND'})[0];
+        let xor1Out = xor1.out;
+        let xor1OutConnections = connections.filter((c) => { return c.a === xor1Out || c.b === xor1Out});
+        let and1Out = and1.out;
+        let and1OutConnections = connections.filter((c) => { return c.a === and1Out || c.b === and1Out});
+        
+        // console.log(and1OutConnections);
+        if (i > 0 && xor1OutConnections.length !== 2 ) {
+            console.log("xor1",i,xor1Out, "is not connected properly" , xor1OutConnections)
+        }
+        if (i > 0 && and1OutConnections.length !== 1 ) {
+            console.log("and1",i,and1Out, "is not connected properly" , and1OutConnections)
+        }
+        if (carry.length > 0) {
+            let carryConnections = connections.filter((c) => { return c.a === carry || c.b === carry});
+            // console.log("carry in for bit" ,i , "carry" , carryXORConnections);
+            if (carryConnections.length !== 2){
+                console.log("carry",i,carry, "is not connected properly" , carryConnections)
+            } else {
+                let carryXOR = carryConnections.filter((c) => { return c.op === 'XOR'})[0];
+                let carryAND = carryConnections.filter((c) => { return c.op === 'AND'})[0];
+                if (carryXOR.length === 0) {
+                    console.log("carryXOR",i,carry, "is not connected properly" )
+                } else {
+                    let expectedOutWire = "z" + stringNumber;
+                    if (expectedOutWire !== carryXOR.out ){
+                        console.log("carryXOR",i,carry, "has the wrong output", carryXOR,"expected", expectedOutWire, "got", carryXOR.out )
+                    }
+                    if (carryXOR.a === carry) {
+                        if (carryXOR.b !== xor1Out) {
+                            console.log("carryXOR",i,carry, "has the wrong b input", carryXOR, "expected", xor1Out, "got",  carryXOR.b )
+                        }
+                    }
+                    if (carryXOR.b === carry) {
+                        if (carryXOR.a !== xor1Out) {
+                            console.log("carryXOR",i,carry, "has the wrong a input", carryXOR, "expected", xor1Out, "got",  carryXOR.a )
+                        }
+                    }
+                }
+                if (carryAND.length === 0) {
+                    console.log("carryAND",i,carry, "is not connected properly" )
+                } else {
+                    if (carryAND.a === carry) {
+                        if (carryAND.b !== xor1Out) {
+                            console.log("carryAND",i,carry, "has the wrong b input", carryAND, "expected", xor1Out, "got",  carryAND.b )
+                        }
+                    }
+                    if (carryAND.b === carry) {
+                        if (carryAND.a !== xor1Out) {
+                            console.log("carryAND",i,carry, "has the wrong a input", carryAND, "expected", xor1Out, "got",  carryAND.a )
+                        }
+                    }
+                }
+            }
+        }
+        if (and1OutConnections.length === 1){
+            let connection = and1OutConnections[0];
+            if (connection.op !== 'OR'){
+                console.log(i,connection, "is a problem" )
+            }
+            let carryOut = connection.out;
+            carry = connection.out;
+            let carryOutConnections = connections.filter((c) => {return c.a === carryOut || c.b === carryOut});
+            // console.log(carryOutConnections);
+            if (carryOutConnections.length !== 2 && i < 44){
+                console.log("carry",i,carryOut, "is not connected properly" , carryOutConnections)
+                
+            }
+        }
+    }
 } catch (err) {
     console.error(err);
 }
 // 36035961805936 correct
-
-/*
-*  x00: 1,
-  x01: 1,
-  x02: 0,
-  x03: 0,
-  x04: 0,
-  x05: 1,
-  x06: 0,
-  x07: 1,
-  x08: 1,
-  x09: 0,
-  x10: 1,
-  x11: 0,
-  x12: 0,
-  x13: 1,
-  x14: 0,
-  x15: 1,
-  x16: 0,
-  x17: 1,
-  x18: 0,
-  x19: 1,
-  x20: 0,
-  x21: 1,
-  x22: 0,
-  x23: 1,
-  x24: 0,
-  x25: 0,
-  x26: 1,
-  x27: 0,
-  x28: 1,
-  x29: 0,
-  x30: 1,
-  x31: 1,
-  x32: 0,
-  x33: 0,
-  x34: 1,
-  x35: 0,
-  x36: 1,
-  x37: 0,
-  x38: 1,
-  x39: 0,
-  x40: 0,
-  x41: 0,
-  x42: 0,
-  x43: 0,
-  x44: 1,
-  y00: 1,
-  y01: 0,
-  y02: 1,
-  y03: 1,
-  y04: 0,
-  y05: 0,
-  y06: 1,
-  y07: 1,
-  y08: 0,
-  y09: 1,
-  y10: 1,
-  y11: 1,
-  y12: 1,
-  y13: 1,
-  y14: 0,
-  y15: 1,
-  y16: 1,
-  y17: 0,
-  y18: 0,
-  y19: 0,
-  y20: 0,
-  y21: 0,
-  y22: 0,
-  y23: 0,
-  y24: 0,
-  y25: 1,
-  y26: 0,
-  y27: 0,
-  y28: 1,
-  y29: 1,
-  y30: 1,
-  y31: 0,
-  y32: 1,
-  y33: 0,
-  y34: 0,
-  y35: 0,
-  y36: 1,
-  y37: 0,
-  y38: 1,
-  y39: 0,
-  y40: 0,
-  y41: 0,
-  y42: 0,
-  y43: 0,
-  y44: 1,
-*/
+//part 2 jqf,mdd,skh,wpd,wts,z11,z19,z37
+/* pairs seem to be
+* z11 wpd
+z19 mdd
+z37 wts
+skh jqf*/
+//all of the z wires have to be the outputs of XOR gates. rest of the wires are found from validating and inspecting.
